@@ -11,7 +11,9 @@ const defaultBackImg = "https://t4.ftcdn.net/jpg/03/87/75/31/360_F_387753109_0xj
 
 
 app.use(express.json())
-app.use(Cors())
+app.use(Cors({
+    origin: "https://vinichat-api.onrender.com"
+}))
 
 mongoose.connect(conn_url, {
     useNewUrlParser: true,
@@ -80,7 +82,7 @@ app.put("/vinichat/addmessage", (req, res) => {
         ).catch((err) => {
             res.status(500).send(err);
         });
-    }   
+    }
 })
 
 app.get("/vinichat/users", (req, res) => {
@@ -200,4 +202,4 @@ app.post("/vinichat/addchat", (req, res) => {
 })
 
 //listner
-app.listen(port, () => console.log(`listening on localhost:${port}`));
+// app.listen(port, () => console.log(`listening on localhost:${port}`));
