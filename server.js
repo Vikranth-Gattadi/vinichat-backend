@@ -159,6 +159,25 @@ app.post("/vinichat/changeimage", (req, res) => {
     });
 })
 
+app.post("/vinichat/changepassword", (req, res) => {
+    const dbUser = req.body;
+    const query = { user: dbUser.user, mobile: dbUser.mobile };
+    const updateDocument = {
+        $set: { "password": dbUser.confPass }
+    };
+    Users.updateOne(query, updateDocument).exec().then((result) => {
+        Accounts.updateOne(query, updateDocument).exec().then((result) => {
+            res.status(202).send(result);
+        }
+        ).catch((err) => {
+            res.status(500).send(err);
+        });
+    }
+    ).catch((err) => {
+        res.status(500).send(err);
+    });
+})
+
 app.post("/vinichat/finduser", (req, res) => {
     const dbUser = req.body;
     if (dbUser.searchUser) {
