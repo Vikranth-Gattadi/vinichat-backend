@@ -119,7 +119,6 @@ app.post("/vinichat/createuser", (req, res) => {
 })
 
 app.post("/vinichat/loginuser", (req, res) => {
-    console.log("hello")
     const dbUser = req.body;
     Accounts.findOne({ "mobile": dbUser.mobile, "password": dbUser.password }, (err, data) => {
         if (err) {
@@ -161,21 +160,17 @@ app.post("/vinichat/changeimage", (req, res) => {
 
 app.post("/vinichat/changepassword", (req, res) => {
     const dbUser = req.body;
-    const query = { user: dbUser.user, mobile: dbUser.mobile };
+    const query = { mobile: dbUser.mobile };
     const updateDocument = {
-        $set: { "password": dbUser.confPass }
+        $set: { "password": dbUser.newPass }
     };
-    Users.updateOne(query, updateDocument).exec().then((result) => {
-        Accounts.updateOne(query, updateDocument).exec().then((result) => {
-            res.status(202).send(result);
-        }
-        ).catch((err) => {
-            res.status(500).send(err);
-        });
+    Accounts.updateOne(query, updateDocument).exec().then((result) => {
+        res.status(202).send(result);
     }
     ).catch((err) => {
         res.status(500).send(err);
     });
+
 })
 
 app.post("/vinichat/finduser", (req, res) => {
