@@ -9,6 +9,8 @@ const chatsSchema = mongoose.Schema({
     chat_mobile: String,
     ImgUrl: String,
     backGroundImg: String,
+    last_message: String,
+    un_read: 0,
     messages: [messagesSchema]
 })
 const vinichatSchema = mongoose.Schema({

@@ -46,20 +46,23 @@ app.put("/vinichat/addmessage", (req, res) => {
                     "chat_mobile": dbChat.chat_mobile,
                     "ImgUrl": dbChat.ImgUrl,
                     "backGroundImg": defaultBackImg,
+                    "un_read": 0,
                     "messages": [],
                 }
                 const updateDocument = {
                     $push: { "chats": chat_data }
                 };
                 Users.updateOne(query, updateDocument).exec().then((result) => {
-                    console.log(result);
+                    // console.log(result);
+                    null;
                 }).catch((err) => {
                     res.status(500).send(err);
                 })
             }
             const updateDocument = {
                 $push: { "chats.$.messages": dbChat.message_data },
-                $set: { "chats.$.ImgUrl": dbChat.ImgUrl }
+                $set: { "chats.$.ImgUrl": dbChat.ImgUrl, "chats.$.last_message": dbChat.message_data.message },
+                $inc: { "chats.$.un_read": 1 }
             };
             Users.updateOne(query, updateDocument).exec().then((result) => {
                 res.status(200).send(result);
@@ -73,7 +76,7 @@ app.put("/vinichat/addmessage", (req, res) => {
     } else {
         const updateDocument = {
             $push: { "chats.$.messages": dbChat.message_data },
-            $set: { "chats.$.ImgUrl": dbChat.ImgUrl }
+            $set: { "chats.$.ImgUrl": dbChat.ImgUrl, "chats.$.last_message": "you: "+dbChat.message_data.message }
         };
         Users.updateOne(query, updateDocument).exec().then((result) => {
             res.status(200).send(result);
@@ -215,5 +218,17 @@ app.post("/vinichat/addchat", (req, res) => {
     })
 })
 
+app.put("/vinichat/markasread", (req, res) => {
+    const dbUser = req.body;
+    const query = { mobile: dbUser.mobile, "chats.chat_mobile": dbUser.chat_mobile }
+    const updateDocument = {
+        $set: { "chats.$.un_read": 0 }
+    };
+    Users.updateOne(query, updateDocument).exec().then((result) => {
+        res.status(202).send("done");
+    }).catch((err) => {
+        res.status(500).send(err);
+    })
+})
 //listner
 app.listen(port, () => console.log(`listening on localhost:${port}`));
